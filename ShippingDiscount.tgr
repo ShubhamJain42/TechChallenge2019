@@ -1,0 +1,26 @@
+trigger ShippingDiscount on Shipping_Invoice__c (after update) {
+	List<Shipping_Invoice__c> shippingInvoiceList = trigger.new;
+    Set<Id> siIds = new Set<Id>();
+    for(Shipping_Invoice__c SI:shippingInvoiceList){
+        siIds.add(SI.Id);
+    }
+    Boolean runTrigger=False;
+    List<Shipping_Invoice__c> newList = [Select id,Shipping__c,Shipping_Discount__c,Subtotal__c,Tax__c,Grand_Total__c from Shipping_Invoice__c where id IN :siIds];
+    for(Shipping_Invoice__c SI : newList){
+        if(SI.Subtotal__c>100 && SI.Shipping_Discount__c==0){
+            SI.Shipping_Discount__c=SI.Shipping__c;
+            runTrigger=True;
+        }
+        if(SI.Subtotal__c<100 && SI.Shipping_Discount__c!=0){
+            SI.Shipping_Discount__c=0;
+            runTrigger=True;
+        }
+        if(SI.Grand_Total__c!=SI.Shipping__c-SI.Shipping_Discount__c+SI.Subtotal__c+SI.Tax__c){
+            SI.Grand_Total__c=SI.Shipping__c-SI.Shipping_Discount__c+SI.Subtotal__c+SI.Tax__c;
+            runTrigger=True;
+        }
+    }
+    if(runTrigger)
+	    update newList;
+    
+}

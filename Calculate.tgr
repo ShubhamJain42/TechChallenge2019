@@ -1,0 +1,56 @@
+trigger Calculate on Item__c (after insert,after update,after delete) {
+    
+    if(trigger.isDelete){
+            
+    	//Get Deleted item record details
+    	List<Item__c> deletedItemList = trigger.old;
+    
+    	//Get unique IDs of shipping invoices whose items are deleted
+    	Set<Id> siIds = new set<Id>();
+    	for(Item__c item : deletedItemList){
+    	    if(!siIds.contains(item.Shipping_Invoice__c))
+            siIds.add(item.Shipping_Invoice__c);            
+    	}
+    
+        //Get shipping invoices record details
+    	List<Shipping_Invoice__c> shippingInvoices = [Select Id,Subtotal__c,Total_Weight__c from Shipping_Invoice__c where id IN :siIds];
+    	for(Shipping_Invoice__c SI : shippingInvoices){
+     	   Id tmpid = SI.Id;
+     	   List<AggregateResult> weightTotal = [select sum(weight__c),sum(price__c) from item__c where shipping_invoice__c=:tmpid];
+    	   System.debug(weightTotal[0]);
+     	   SI.Total_Weight__c=double.valueOf(weightTotal[0].get('expr0'));
+    	   SI.Subtotal__c=double.valueOf(weightTotal[0].get('expr1'));
+           SI.Total_Weight__c=(SI.Total_Weight__c==null?0:SI.Total_Weight__c);
+           SI.Subtotal__c=(SI.Subtotal__c==null?0:SI.Subtotal__c);
+           SI.Tax__c=SI.Subtotal__c*0.0925;
+           SI.Shipping__c=SI.Total_Weight__c*0.75; 
+   	 	}
+   	 	update shippingInvoices;
+    }
+    
+    if(trigger.isAfter &&(trigger.isUpdate||trigger.isInsert)){
+    
+    	//Get Item record details
+    	List<Item__c> itemList = trigger.new;
+        
+    	//Get unique IDs of shipping invoices whose items are added/updated/deleted
+    	Set<Id> siIds = new set<Id>();
+    	for(Item__c item :itemList){
+    	    if(!siIds.contains(item.Shipping_Invoice__c))
+	 	      siIds.add(item.Shipping_Invoice__c);
+    	}
+    
+        //Get shipping invoices record details
+    	List<Shipping_Invoice__c> shippingInvoices = [Select Id,Subtotal__c,Total_Weight__c from Shipping_Invoice__c where id IN :siIds];
+    	for(Shipping_Invoice__c SI : shippingInvoices){
+     	   Id tmpid = SI.Id;
+     	   List<AggregateResult> weightTotal = [select sum(weight__c),sum(price__c) from item__c where shipping_invoice__c=:tmpid];
+    	   // System.debug(weightTotal[0].get('expr1'));
+     	   SI.Total_Weight__c=double.valueOf(weightTotal[0].get('expr0'));
+    	   SI.Subtotal__c=double.valueOf(weightTotal[0].get('expr1'));
+           SI.Tax__c=SI.Subtotal__c*0.0925;
+           SI.Shipping__c=SI.Total_Weight__c*0.75; 
+   	 	}
+   	 	update shippingInvoices;
+	 }
+}
