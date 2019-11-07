@@ -1,0 +1,9 @@
+public class ItemListController {
+	@AuraEnabled
+    public static List<Item__c> getItemLists(List<Id> shippingInvoiceIds) {
+        // Getting the list of items from where Id is in shipping invoice
+                List<Item__c> itemList = [SELECT Id, Name, Price__c,Shipping_Invoice__r.id FROM Item__C WHERE Shipping_Invoice__r.id in :shippingInvoiceIds];
+                // Returning the item list
+        return itemList;
+    }
+}
