@@ -1,0 +1,31 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" controller="ItemListController" access="global" >
+    <!-- Handler to call function when page is loaded initially -->
+    <aura:handler name="init" action="{!c.getItemList}" value="{!this}" />
+    <!-- List of items stored in attribute -->
+    <aura:attribute name="itemList" type="List" />
+    <!-- Lightning card to show items -->
+        <lightning:card title="Items">
+        <!-- Body of lightning card starts here -->
+        <p class="slds-p-horizontal_small">
+            <!-- Aura iteration to iterate list, similar to apex:repeat -->
+            <aura:iteration items="{!v.itemList}" var="item">
+                <!-- recordViewForm to view the record -->
+                <lightning:recordViewForm recordId="{!item.Id}" objectApiName="Item__c">
+                    <div class="slds-box slds-theme_default">
+                        <!-- outputfield used to output the record field data inside recordViewForm -->
+                        <lightning:outputField fieldName="Name" />
+                        <lightning:outputField fieldName="Price__c" />
+                        <lightning:outputField fieldName="Weight__c" />
+                    </div>
+                </lightning:recordViewForm>
+                <!-- Line break between two records -->
+                <br />
+            </aura:iteration>
+        </p>
+        <!-- Lightning card actions -->
+        <aura:set attribute="actions">
+            <!-- New button added -->
+            <lightning:button label="New" onclick="{!c.newItem}" />
+        </aura:set>
+    </lightning:card>
+</aura:component>
