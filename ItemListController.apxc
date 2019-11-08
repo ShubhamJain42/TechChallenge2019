@@ -17,7 +17,7 @@ public class ItemListController {
             insert newItem;
             // Setting the success status and message in resultMap
             resultMap.put('status', 'success');
-            resultMap.put('message', 'Contact Inserted Successfully');        
+            resultMap.put('message', 'Item Inserted Successfully');        
         }
         catch(Exception e) {
             // Setting the error status and message in resultMap
