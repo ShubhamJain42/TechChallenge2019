@@ -3,6 +3,16 @@
     <aura:handler name="init" action="{!c.getItemList}" value="{!this}" />
     <!-- List of items stored in attribute -->
     <aura:attribute name="itemList" type="List" />
+    <aura:attribute name="item" type="Item__c"
+    default="{
+        'SObjectType': 'Item__c',
+        'Name': '',
+        'Price__c': '',
+        'Quantity__c': '',
+        'Weight__c': '1',
+        'Shipping_Invoice__r.id':''
+             }"> 
+         </aura:attribute>
     <!-- Lightning card to show items -->
         <lightning:card title="Items">
         <!-- Body of lightning card starts here -->
@@ -24,8 +34,35 @@
         </p>
         <!-- Lightning card actions -->
         <aura:set attribute="actions">
-            <!-- New button added -->
-            <lightning:button label="New" onclick="{!c.newItem}" />
+            <!-- New item modal button added -->
+            <lightning:button name="itemModal" label="New Item" onclick="{!c.openModal}" />
         </aura:set>
     </lightning:card>
+    
+     <div>
+        <section aura:id="itemModal" role="dialog" tabindex="-1" aria-labelledby="itemModalHeading" aria-modal="true" aria-describedby="itemModalBody" class="slds-modal">
+            <!-- Modal Container -->
+            <div class="slds-modal__container">
+                <!-- Modal Header ( consists of close button and heading of modal ) -->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon class="slds-modal__close" alternativeText="Close" iconName="utility:close" onclick="{!c.closeModal}" variant="bare-inverse" size="large"></lightning:buttonIcon>
+                    <h2 id="itemModalHeading" class="slds-text-heading_medium slds-hyphenate">New Item</h2>
+                </header>
+                <!-- Modal Body ( consists of form ) -->
+                <div class="slds-modal__content slds-p-around_medium" id="itemModalBody">
+                    <lightning:input label="Item Name" value="{!v.item.Name}" />
+                    <lightning:input label="Price" required="true" value="{!v.item.Price__c}" />
+                    <lightning:input label="Quantity" value="{!v.item.Quantity__c}" />
+                    <lightning:input label="Weight" value="{!v.item.Weight__c}" />
+                </div>
+                <!-- Modal Footer ( consists of cancel and save buttons ) -->
+                <footer class="slds-modal__footer">
+                    <lightning:button onclick="{!c.closeModal}" variant="neutral">Cancel</lightning:button>
+                    <lightning:button onclick="{!c.newItem}" variant="brand" >Save</lightning:button>
+                </footer>
+            </div>
+        </section>
+        <!-- Modal Backdrop -->
+        <div aura:id="itemModalBackdrop" class="slds-backdrop"></div>
+    </div>
 </aura:component>
