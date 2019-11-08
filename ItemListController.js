@@ -1,7 +1,7 @@
 ({
     // Function called on initial page loading to get item list from server
     getItemList : function(component, event, helper) {
-        // Helper function - fetchContacts called for interaction with server
+        // Helper function - fetchItems called for interaction with server
                 helper.fetchItems(component, event, helper);
         },
     // Function used to open the item modal
@@ -27,7 +27,7 @@
     	}
 })
 /*
-    // Function used to create a new Contact
+    // Function used to create a new Item
     newItem: function(component, event, helper) {
         // Global event force:createRecord is used
         var createItem = $A.get("e.force:createRecord");
